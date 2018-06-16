@@ -1,46 +1,54 @@
 const getElement = (prefix, id) => document.getElementById(`${prefix}-${id}`);
 
 module.exports = (store) => {
-  const render = () => {
-    const countersDiv = document.getElementById('counters');
-    countersDiv.innerHTML = '';
+  const state = store.getState();
+  
+  const appDiv = document.querySelector('.counters');
+  appDiv.innerHTML = `<button id="add-counter">Add counter</button>
+  <div id="counters"></div>`;
 
-    const state = store.getState();
-    console.log(state);
+  const addCounterButton = document.getElementById('add-counter');
+  
+  addCounterButton.addEventListener('click', () => {
+    const action = { type: 'COUNTER_ADD', id: state.nextCounterId };
+    store.dispatch(action);
+  });
 
-    state.forEach(element => {
-      const { id, value } = element;
+  const countersDiv = document.getElementById('counters');
+  countersDiv.innerHTML = '';
 
-      const counter = document.createElement('div');
-      counter.id = `counter-${id}`;
+  console.log(state);
 
-      counter.innerHTML = `<span id="value-${id}">${value}</span>
-      <button id="dec-${id}">-</button>
-      <button id="inc-${id}">+</button>
-      <button id="del-${id}">x</button>`;
+  state.counters.forEach(element => {
+    const { id, value } = element;
 
-      countersDiv.appendChild(counter);
+    const counter = document.createElement('div');
+    counter.id = `counter-${id}`;
 
-      const delButton = getElement('del', id);
-      const decButton = getElement('dec', id);
-      const incButton = getElement('inc', id);
+    counter.innerHTML = `<span id="value-${id}">${value}</span>
+    <button id="dec-${id}">-</button>
+    <button id="inc-${id}">+</button>
+    <button id="del-${id}">x</button>`;
 
-      delButton.addEventListener('click', () => {
-        const action = { type: 'COUNTER_REMOVE', id };
-        store.dispatch(action);
-      });
+    countersDiv.appendChild(counter);
 
-      decButton.addEventListener('click', () => {
-        const action = { type: 'DECREMENT', id };
-        store.dispatch(action);
-      });
+    const delButton = getElement('del', id);
+    const decButton = getElement('dec', id);
+    const incButton = getElement('inc', id);
 
-      incButton.addEventListener('click', () => {
-        const action = { type: 'INCREMENT', id };
-        store.dispatch(action);
-      });
-    })
-  }
+    delButton.addEventListener('click', () => {
+      const action = { type: 'COUNTER_REMOVE', id };
+      store.dispatch(action);
+    });
 
-  return render;
+    decButton.addEventListener('click', () => {
+      const action = { type: 'DECREMENT', id };
+      store.dispatch(action);
+    });
+
+    incButton.addEventListener('click', () => {
+      const action = { type: 'INCREMENT', id };
+      store.dispatch(action);
+    });
+  });
 }
