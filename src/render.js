@@ -27,7 +27,7 @@ const Counter = (value, { inc, dec, del }) => {
 
 module.exports = (store) => {
   const { counters, nextCounterId } = store.getState();
-  
+
   const appDiv = document.getElementById('counters');
   appDiv.innerHTML = '';
 
@@ -35,11 +35,11 @@ module.exports = (store) => {
 
   appDiv.append(
     Button('Add counter', handler(nextCounterId, 'COUNTER_ADD')),
-    ...counters.map(({ id, value }) => 
-    Counter(value, {
-      inc: handler(id, 'INCREMENT'),
-      dec: handler(id, 'DECREMENT'),
-      del: handler(id, 'COUNTER_REMOVE'),
-    }))
+    ...counters.map(({ id, value }) =>
+      Counter(value, {
+        inc: handler(id, 'INCREMENT'),
+        dec: handler(id, 'DECREMENT'),
+        del: handler(id, 'COUNTER_REMOVE'),
+      }))
   );
 };
