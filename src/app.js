@@ -1,11 +1,11 @@
 const redux = require('redux');
-const reducer = require('./reducer');
+const reducers = require('./reducer');
 const render = require('./render');
 
 module.exports = () => {
-  const initialState = { nextCounterId: 0, counters: [] }
+  const combinedReducers = redux.combineReducers(reducers);
 
-  const store = redux.createStore(reducer, initialState);
+  const store = redux.createStore(combinedReducers);
   
   const renderWithStore = () => render(store);
   
