@@ -1,16 +1,11 @@
-const handlerForButton = (type, id, store) => () => {
+const actionHandler = (type, id, store) => () => {
   const action = { type, id };
   store.dispatch(action);
 };
 
-const getHandlers = store => id => ({
-  add: handlerForButton('COUNTER_ADD', id, store),
-  del: handlerForButton('COUNTER_REMOVE', id, store),
-  inc: handlerForButton('INCREMENT', id, store),
-  dec: handlerForButton('DECREMENT', id, store),
-});
+const getHandler = store => id => type => actionHandler(type, id, store);
 
-const createButton = (value, handler) => {
+const Button = (value, handler) => {
   const button = document.createElement('button');
   button.innerHTML = value;
 
@@ -19,31 +14,15 @@ const createButton = (value, handler) => {
   return button;
 }
 
-const createCounterNode = (counter, handlers) => {
-  const { id, value } = counter;
-
-  const handlersWithId = handlers(id);
+const Counter = (counter, handlerTemplate) => {
+  const { value } = counter;
 
   const counterDiv = document.createElement('div');
   counterDiv.innerHTML = `<span>${value}</span>`;
 
-  buttonsTemplate = [
-    {
-      type: 'inc',
-      value: '+',
-    },
-    {
-      type: 'dec',
-      value: '-',
-    },
-    {
-      type: 'del',
-      value: 'x',
-    },
-  ];
-
-  buttonsTemplate.map(({ type, value }) => createButton(value, handlersWithId[type]))
-    .forEach(button => counterDiv.append(button));
+  counterDiv.append(Button('+', handlerTemplate('INCREMENT')));
+  counterDiv.append(Button('-', handlerTemplate('DECREMENT')));
+  counterDiv.append(Button('x', handlerTemplate('COUNTER_REMOVE')));
 
   return counterDiv;
 };
@@ -54,11 +33,13 @@ module.exports = (store) => {
   const appDiv = document.getElementById('counters');
   appDiv.innerHTML = '';
 
-  const handlers = getHandlers(store);
+  const handler = getHandler(store);
 
-  const addCounterButton = createButton('Add counter', handlers(nextCounterId).add)
+  const addCounterButton = Button('Add counter', handler(nextCounterId)('COUNTER_ADD'));
   appDiv.append(addCounterButton);
 
-  counters.map(counter => createCounterNode(counter, handlers))
-    .forEach(counterNode => appDiv.append(counterNode));
+  counters.map(counter => {
+    const handlerTemplate = handler(counter.id);
+    return Counter(counter, handlerTemplate);
+  }).forEach(counterNode => appDiv.append(counterNode));
 };
