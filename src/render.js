@@ -12,16 +12,9 @@ const getHandlers = store => id => ({
   dec: (button) => addHandlerToButton(button, 'DECREMENT', id, store),
 });
 
-const createButton = (type, id, handler) => {
-  value = {
-    inc: '+',
-    dec: '-',
-    del: 'x',
-  };
-
+const createButton = (value, handler) => {
   const button = document.createElement('button');
-  button.id = `${type}-${id}`;
-  button.innerHTML = value[type];
+  button.innerHTML = value;
 
   handler(button);
 
@@ -37,7 +30,22 @@ const createCounterNode = (counter, handlers) => {
   counterDiv.id = `counter-${id}`;
   counterDiv.innerHTML = `<span id="value-${id}">${value}</span>`;
 
-  ['dec', 'inc', 'del'].map(type => createButton(type, id, handlersWithId[type]))
+  buttonsTemplate = [
+    {
+      type: 'inc',
+      value: '+',
+    },
+    {
+      type: 'dec',
+      value: '-',
+    },
+    {
+      type: 'del',
+      value: 'x',
+    },
+  ];
+
+  buttonsTemplate.map(({ type, value }) => createButton(value, handlersWithId[type]))
     .forEach(button => counterDiv.append(button));
 
   return counterDiv;
@@ -46,19 +54,14 @@ const createCounterNode = (counter, handlers) => {
 module.exports = (store) => {
   const { counters, nextCounterId } = store.getState();
   
-  const appDiv = document.querySelector('.counters');
-  appDiv.innerHTML = `<button id="add-counter">Add counter</button>
-  <div id="counters"></div>`;
+  const appDiv = document.getElementById('counters');
+  appDiv.innerHTML = '';
 
   const handlers = getHandlers(store);
 
-  const addCounterButton = document.getElementById('add-counter');
-  
-  handlers(nextCounterId).add(addCounterButton);
-
-  const countersDiv = document.getElementById('counters');
-  countersDiv.innerHTML = '';
+  const addCounterButton = createButton('Add counter', handlers(nextCounterId).add)
+  appDiv.append(addCounterButton);
 
   counters.map(counter => createCounterNode(counter, handlers))
-    .forEach(counterNode => countersDiv.append(counterNode));
+    .forEach(counterNode => appDiv.append(counterNode));
 };
