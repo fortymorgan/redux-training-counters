@@ -16,9 +16,11 @@ const Counter = (value, { inc, dec, del }) => {
   const counterDiv = document.createElement('div');
   counterDiv.innerHTML = `<span>${value}</span>`;
 
-  counterDiv.append(Button('+', inc));
-  counterDiv.append(Button('-', dec));
-  counterDiv.append(Button('x', del));
+  counterDiv.append(
+    Button('+', inc),
+    Button('-', dec),
+    Button('x', del)
+  );
 
   return counterDiv;
 };
@@ -31,11 +33,13 @@ module.exports = (store) => {
 
   const handler = getHandler(store);
 
-  appDiv.append(Button('Add counter', handler(nextCounterId, 'COUNTER_ADD')));
-
-  counters.map(({ id, value }) => Counter(value, {
+  appDiv.append(
+    Button('Add counter', handler(nextCounterId, 'COUNTER_ADD')),
+    ...counters.map(({ id, value }) => 
+    Counter(value, {
       inc: handler(id, 'INCREMENT'),
       dec: handler(id, 'DECREMENT'),
       del: handler(id, 'COUNTER_REMOVE'),
-    })).forEach(counterNode => appDiv.append(counterNode));
+    }))
+  );
 };
