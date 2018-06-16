@@ -1,22 +1,20 @@
-const addHandlerToButton = (button, type, id, store) => {
-  button.addEventListener('click', () => {
-    const action = { type, id };
-    store.dispatch(action);
-  });
+const handlerForButton = (type, id, store) => () => {
+  const action = { type, id };
+  store.dispatch(action);
 };
 
 const getHandlers = store => id => ({
-  add: (button) => addHandlerToButton(button, 'COUNTER_ADD', id, store),
-  del: (button) => addHandlerToButton(button, 'COUNTER_REMOVE', id, store),
-  inc: (button) => addHandlerToButton(button, 'INCREMENT', id, store),
-  dec: (button) => addHandlerToButton(button, 'DECREMENT', id, store),
+  add: handlerForButton('COUNTER_ADD', id, store),
+  del: handlerForButton('COUNTER_REMOVE', id, store),
+  inc: handlerForButton('INCREMENT', id, store),
+  dec: handlerForButton('DECREMENT', id, store),
 });
 
 const createButton = (value, handler) => {
   const button = document.createElement('button');
   button.innerHTML = value;
 
-  handler(button);
+  button.addEventListener('click', () => handler())
 
   return button;
 }
@@ -27,8 +25,7 @@ const createCounterNode = (counter, handlers) => {
   const handlersWithId = handlers(id);
 
   const counterDiv = document.createElement('div');
-  counterDiv.id = `counter-${id}`;
-  counterDiv.innerHTML = `<span id="value-${id}">${value}</span>`;
+  counterDiv.innerHTML = `<span>${value}</span>`;
 
   buttonsTemplate = [
     {
