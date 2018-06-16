@@ -11,5 +11,5 @@ module.exports = () => {
   
   store.subscribe(renderWithStore);
 
-  render(store);
+  renderWithStore();
 };
